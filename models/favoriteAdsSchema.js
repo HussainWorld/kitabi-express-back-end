@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const favoriteAd = new mongoose.Schema({
+const favoriteAdsSchema = new mongoose.Schema({
   adId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Ad',
@@ -8,4 +8,4 @@ const favoriteAd = new mongoose.Schema({
   }
 });
 
-module.exports = favoriteAd;
+module.exports = favoriteAdsSchema;
