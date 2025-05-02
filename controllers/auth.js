@@ -17,7 +17,11 @@ router.post('/sign-up', async (req, res) => {
     
     const user = await User.create({
       username: req.body.username,
-      hashedPassword: bcrypt.hashSync(req.body.password, saltRounds)
+      hashedPassword: bcrypt.hashSync(req.body.password, saltRounds),
+      email: req.body.email,
+      phone: req.body.phone,
+      gender: req.body.gender,
+      birthDate: req.body.birthDate
     });
 
     const payload = { username: user.username, _id: user._id };
