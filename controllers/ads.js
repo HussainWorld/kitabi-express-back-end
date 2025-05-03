@@ -25,7 +25,27 @@ router.get('/:adId', verifyToken, async (req, res) => {
   }
 });
 
+router.delete("/:adId", verifyToken, async (req, res) => {
+  try{
+    const ad = await Ad.findById(req.params.adId);
+    const deletedAd = await Ad.findByIdAndDelete(req.params.adId);
 
+    // console.log('user id:',ad.userId.toString())
+    // console.log('req.user._id:',req.user._id)
+
+    if (!deletedAd) {
+      return res.status(404).json({ err: 'Ad not found' })
+    }
+
+    if(req.user._id !== ad.userId.toString()){
+      return res.status(403).send("You are not allowed to delete the ad")
+    }
+    
+    res.status(200).json(deletedAd)
+  }catch(err){
+    res.status(500).json({ err: err.message });
+  }
+});
 // create ad
 router.post('/', verifyToken, async (req, res) => {
   try {
