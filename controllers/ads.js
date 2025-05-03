@@ -14,6 +14,18 @@ router.get('/', async (req, res) => {
   }
 })
 
+
+//get specific ad
+router.get('/:adId', verifyToken, async (req, res) => {
+  try{
+    const ad = await Ad.findById(req.params.adId);
+    res.status(200).json(ad)
+  }catch(err){
+    res.status(500).json({ err: err.message });
+  }
+});
+
+
 // create ad
 router.post('/', verifyToken, async (req, res) => {
   try {
