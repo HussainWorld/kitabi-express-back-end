@@ -12,7 +12,9 @@ const authRouter = require('./controllers/auth');
 const testJwtRouter = require('./controllers/test-jwt');
 const usersRouter = require('./controllers/users');
 
-const adsRouter = require('./controllers/ads')
+const adsRouter = require('./controllers/ads');
+const wantedAdsRouter = require('./controllers/wantedAds');
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI);
 
@@ -31,6 +33,7 @@ app.use('/test-jwt', testJwtRouter);
 app.use('/users', usersRouter);
 
 app.use('/ads', adsRouter);
+app.use('/wantedAds', wantedAdsRouter);
 
 const port = process.env.PORT || 3000;
 

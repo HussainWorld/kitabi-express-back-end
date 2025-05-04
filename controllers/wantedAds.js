@@ -1,72 +1,69 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const Ad = require('../models/ad');
+const WantedAd = require('../models/wantedAd');
 const router = express.Router();
 const verifyToken = require('../middleware/verify-token')
 
-// get all ads
+// get all wanted ads
 router.get('/', async (req, res) => {
   try {
-      const ads = await Ad.find({})
-      res.json(ads)
+      const WantedsAds = await WantedAd.find({})
+      res.json(WantedsAds)
   } catch (err) {
       res.status(500).json({ err: err.message })
   }
 })
 
 
-//get specific ad
-router.get('/:adId', verifyToken, async (req, res) => {
+//get specific wanted ad
+router.get('/:wantedAdId', verifyToken, async (req, res) => {
   try{
-    const ad = await Ad.findById(req.params.adId);
-    res.status(200).json(ad)
+    const wantedAd = await WantedAd.findById(req.params.wantedAdId);
+    res.status(200).json(wantedAd)
   }catch(err){
     res.status(500).json({ err: err.message });
   }
 });
 
-router.delete("/:adId", verifyToken, async (req, res) => {
+router.delete("/:wantedAdId", verifyToken, async (req, res) => {
   try{
-    const ad = await Ad.findById(req.params.adId);
+    const wantedAd = await WantedAd.findById(req.params.wantedAdId);
 
     // console.log('user id:',ad.userId.toString())
     // console.log('req.user._id:',req.user._id)
 
-    if (!deletedAd) {
-      return res.status(404).json({ err: 'Ad not found' })
+    if (!deletedWantedAd) {
+      return res.status(404).json({ err: 'Wanted Ad not found' })
     }
 
-    if(req.user._id !== ad.userId.toString()){
+    if(req.user._id !== wantedAd.userId.toString()){
       return res.status(403).send("You are not allowed to delete the ad")
     }
 
-    const deletedAd = await Ad.findByIdAndDelete(req.params.adId);
+    const deletedWantedAd = await WantedAd.findByIdAndDelete(req.params.wantedAdId);
     
-    res.status(200).json(deletedAd)
+    res.status(200).json(deletedWantedAd)
   }catch(err){
     res.status(500).json({ err: err.message });
   }
 });
+
 // create ad
 router.post('/', verifyToken, async (req, res) => {
   try {
-    const { title, description, price, status, location, image, category } = req.body;
+    const { title, description, image } = req.body;
 
-    if (!title || !price || !status || !location || !image || !category) {
+    if (!title || !image ) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
     const userId = req.user._id;
 
-    const newAd = new Ad({
+    const newAd = new WantedAd({
       userId,
       title,
       description,
-      price,
-      status,
-      location,
-      image,
-      category,
+      image
     });
 
     const savedAd = await newAd.save();
