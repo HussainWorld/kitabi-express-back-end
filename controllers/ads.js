@@ -32,7 +32,7 @@ router.delete("/:adId", verifyToken, async (req, res) => {
     // console.log('user id:',ad.userId.toString())
     // console.log('req.user._id:',req.user._id)
 
-    if (!deletedAd) {
+    if (!ad) {
       return res.status(404).json({ err: 'Ad not found' })
     }
 
@@ -41,18 +41,19 @@ router.delete("/:adId", verifyToken, async (req, res) => {
     }
 
     const deletedAd = await Ad.findByIdAndDelete(req.params.adId);
-    
+
     res.status(200).json(deletedAd)
   }catch(err){
     res.status(500).json({ err: err.message });
   }
 });
+
 // create ad
 router.post('/', verifyToken, async (req, res) => {
   try {
     const { title, description, price, status, location, image, category } = req.body;
 
-    if (!title || !price || !status || !location || !image || !category) {
+    if (!title || !price || !status || !location || !category) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
@@ -74,6 +75,45 @@ router.post('/', verifyToken, async (req, res) => {
     res.status(201).json(savedAd);
   } catch (err) {
     console.error('Error creating ad:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// update ad
+router.put('/:adId', verifyToken, async (req, res) => {
+  try {
+    const { title, description, price, status, location, image, category, } = req.body;
+    const { adId } = req.params;
+
+    if (!title || !description) {
+      return res.status(400).json({ error: 'Title and image are required' });
+    }
+
+    const userId = req.user._id;  // Ensure the user is updating their own ad
+
+    // Find the ad by ID and update it
+    const ad = await Ad.findById(adId);
+
+    if (!ad) {
+      return res.status(404).json({ error: 'Ad not found' });
+    }
+
+    // Check if the user is the owner of the ad
+    if (ad.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'You are not authorized to update this ad' });
+    }
+
+    // Update the ad fields
+    ad.title = title || ad.title;
+    ad.description = description || ad.description;
+    ad.image = image || ad.image;
+
+    // Save the updated ad
+    const updatedAd = await ad.save();
+
+    res.status(200).json(updatedAd);
+  } catch (err) {
+    console.error('Error updating ad:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });

@@ -31,7 +31,7 @@ const adSchema = new mongoose.Schema({
   image: {
     type: String,
     require: false,
-    default: 'defaultAdImage'
+    default: 'defaultAdImage.jpg'
   },
   category: {
     type: String,

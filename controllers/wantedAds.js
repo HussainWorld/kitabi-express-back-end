@@ -32,7 +32,7 @@ router.delete("/:wantedAdId", verifyToken, async (req, res) => {
     // console.log('user id:',ad.userId.toString())
     // console.log('req.user._id:',req.user._id)
 
-    if (!deletedWantedAd) {
+    if (!wan) {
       return res.status(404).json({ err: 'Wanted Ad not found' })
     }
 
@@ -74,5 +74,45 @@ router.post('/', verifyToken, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+// update wanted ad
+router.put('/:wantedAdId', verifyToken, async (req, res) => {
+  try {
+    const { title, description, image } = req.body;
+    const { wantedAdId } = req.params;
+
+    if (!title || !image) {
+      return res.status(400).json({ error: 'Title and image are required' });
+    }
+
+    const userId = req.user._id;  // Ensure the user is updating their own ad
+
+    // Find the ad by ID and update it
+    const wantedAd = await WantedAd.findById(wantedAdId);
+
+    if (!wantedAd) {
+      return res.status(404).json({ error: 'Ad not found' });
+    }
+
+    // Check if the user is the owner of the ad
+    if (wantedAd.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ error: 'You are not authorized to update this ad' });
+    }
+
+    // Update the ad fields
+    wantedAd.title = title || wantedAd.title;
+    wantedAd.description = description || wantedAd.description;
+    wantedAd.image = image || wantedAd.image;
+
+    // Save the updated ad
+    const updatedWantedAd = await wantedAd.save();
+
+    res.status(200).json(updatedWantedAd);
+  } catch (err) {
+    console.error('Error updating ad:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 
 module.exports = router;
