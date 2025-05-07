@@ -23,7 +23,14 @@ mongoose.connection.on('connected', () => {
 });
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: 'https://kitabi-react-front-end-git-main-hussains-projects-06bdfe2e.vercel.app', // Your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  credentials: true, // Allow cookies, authorization headers, etc.
+};
+
+app.use(cors(corsOptions));  // Use this instead of app.use(cors());
 app.use(express.json());
 app.use(logger('dev'));
 
